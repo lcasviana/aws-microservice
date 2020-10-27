@@ -1,29 +1,56 @@
 const path = require('path');
-const Shark = require('../models/sharks');
+const Vendas = require('../models/vendas.model');
 
-exports.index = function (req, res) {
-    res.sendFile(path.resolve('views/sharks.html'));
+const gerar = async (requisicao, resposta) => {
+  try {
+
+    const { produtos } = requisicao.body;
+    if (!Array.isArray(produtos))
+      return resposta.status(400).json({ mensagem: 'Produtos não é uma lista' });
+
+    if (!produtos.length)
+      return resposta.status(400).json({ mensagem: 'Lista vazia' });
+
+    const produtosPromises = produtos.map(produto => {
+      try {
+        return Promise.resolve({});
+      } catch {
+        return Promise.reject(undefined);
+      }
+    });
+
+    const produtosResultado = await Promise.all(produtosPromises);
+    if (produtosResultado.some(produto => !produto))
+      return resposta.status(404).json({ mensagem: 'Produtos não encontrados' });
+
+
+
+  } catch (erro) {
+    console.error(erro);
+    return resposta.status(500).json({ mensagem: 'Erro inesperado' });
+  }
 };
 
-exports.create = function (req, res) {
-    var newShark = new Shark(req.body);
-    console.log(req.body);
-    newShark.save(function (err) {
-            if(err) {
-            res.status(400).send('Unable to save shark to database');
-        } else {
-            res.redirect('/sharks/getshark');
-        }
-  });
-               };
+const listar = async (requisicao, resposta) => {
+  try {
 
-exports.list = function (req, res) {
-        Shark.find({}).exec(function (err, sharks) {
-                if (err) {
-                        return res.send(500, err);
-                }
-                res.render('getshark', {
-                        sharks: sharks
-             });
-        });
+
+
+  } catch (erro) {
+    console.error(erro);
+    return resposta.status(500).json({ mensagem: 'Erro inesperado' });
+  }
 };
+
+const cancelar = async (requisicao, resposta) => {
+  try {
+
+
+
+  } catch (erro) {
+    console.error(erro);
+    return resposta.status(500).json({ mensagem: 'Erro inesperado' });
+  }
+};
+
+module.exports = { gerar, listar, cancelar };
