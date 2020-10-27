@@ -1,18 +1,20 @@
 const express = require('express');
+const cors = require('cors');
+
+const dotenv = require('dotenv');
+dotenv.config();
+
+// _ = require('./database/mongo.database');
+
 const app = express();
-const router = express.Router();
-const db = require('./db');
-const sharks = require('./routes/sharks');
-
-const path = __dirname + '/views/';
-const port = process.env.PORT || 8080;
-
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
+app.use(cors);
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path));
-app.use('/sharks', sharks);
+app.use(express.static(__dirname + '/views/'));
 
-app.listen(port, function () {
-  console.log(`Example app listening on ${port}!`);
-});
+const vendas = require('./routes/vendas.route');
+app.use('/vendas', vendas);
+
+const port = process.env.PORT || 9000;
+app.listen(port, () => console.log(`vendas port ${port}`));

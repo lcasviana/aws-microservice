@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const shark = require('../controllers/sharks');
+const vendas = require('../controllers/vendas.controller');
 
-router.get('/', function(req, res){
-    shark.index(req,res);
+router.get('/', (requisicao, resposta) => {
+  vendas.listar(requisicao, resposta);
 });
 
-router.post('/addshark', function(req, res) {
-    shark.create(req,res);
+router.post('/', (requisicao, resposta) => {
+  vendas.gerar(requisicao, resposta);
 });
 
-router.get('/getshark', function(req, res) {
-    shark.list(req,res);
+router.delete('/:id', (requisicao, resposta) => {
+  vendas.cancelar(requisicao, resposta);
 });
 
 module.exports = router;
