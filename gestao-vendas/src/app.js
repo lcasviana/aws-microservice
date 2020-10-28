@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// _ = require('./database/mongo.database');
+_ = require('./database/mongo.database');
 
 const app = express();
 app.engine('html', require('ejs').renderFile);
