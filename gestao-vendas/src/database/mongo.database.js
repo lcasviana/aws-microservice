@@ -8,5 +8,5 @@ const options = {
 };
 
 mongoose.connect(process.env.MONGODB, options)
-  .then(() => console.log('mongodb connected'))
+  .then(() => console.log('vendas mongodb connected'))
   .catch((err) => console.log(err));
