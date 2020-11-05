@@ -1,10 +1,21 @@
+const { ObjectId } = require('mongodb');
 const vendasModel = require('../models/vendas.model');
+
+const vendaJson = (venda) => ({
+  id: venda._id,
+  produtos: venda.produtos.map(p => ({
+    produtoId: p.produtoId,
+    quantidade: p.quantidade
+  })),
+  valorReais: venda.valorReais,
+});
 
 const gerar = async (requisicao, resposta) => {
   try {
 
-    const { produtos } = requisicao.body;
-    if (!Array.isArray(produtos) || !produtos.length || produtos.some(p => !p.produtoId?.trim() || !p.quantidade))
+    const produtos = requisicao?.body?.produtos;
+    if (!produtos || !Array.isArray(produtos) || !produtos.length || produtos.some(p =>
+      !p.produtoId || typeof p.produtoId !== 'string' || !p.produtoId?.trim() || !p.quantidade || typeof p.quantidade !== 'number'))
       return resposta.status(400).json({ mensagem: 'Lista inválida de produtos.' });
 
     const produtosPromises = produtos.map(produto => {
@@ -22,12 +33,11 @@ const gerar = async (requisicao, resposta) => {
       return resposta.status(404).json({ mensagem: `Produtos ${produtosNaoEncontrados.join(' ,')} não encontrados` });
 
     const venda = await vendasModel.create({
-      id: new Date().toISOString(),
       valorReais: produtosResultado.reduce((prev, curr) => prev + curr.valor, 0),
       produtos,
     });
 
-    return resposta.status(201).json(venda);
+    return resposta.status(201).json(vendaJson(venda));
 
   } catch (erro) {
     console.error(erro);
@@ -39,7 +49,7 @@ const listar = async (_, resposta) => {
   try {
 
     const vendas = await vendasModel.find({});
-    return resposta.status(200).json({ vendas });
+    return resposta.status(200).json({ vendas: vendas.map(v => vendaJson(v)) });
 
   } catch (erro) {
     console.error(erro);
@@ -50,13 +60,15 @@ const listar = async (_, resposta) => {
 const cancelar = async (requisicao, resposta) => {
   try {
 
-    const { id } = requisicao.params;
-    if (!id)
+    const id = requisicao?.params?.id;
+    if (!id || typeof id === 'string' || !ObjectID.isValid(id))
+      return resposta.status(400).json({ mensagem: 'Id inválido.' });
+
+    const venda = await vendasModel.findOne(ObjectId(id));
+    if (!venda)
       return resposta.status(404).json({ mensagem: `Venda ${id} não encontrada.` });
 
-    const venda = await vendasModel.findOne({ id });
     await venda.remove();
-
     return resposta.status(200).json({ mensagem: `Venda ${id} cancelada com sucesso!` });
 
   } catch (erro) {
