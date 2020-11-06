@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 const indexRoute = require('./routes/index.route');
 const vendasRoute = require('./routes/vendas.route');
 app.use('/', indexRoute);
-app.use('/vendas', vendasRoute);
+app.use('/api/v1/vendas', vendasRoute);
 app.use((requisicao, resposta) =>
   resposta.status(404).send(`${requisicao.method} ${requisicao.url}`));
 

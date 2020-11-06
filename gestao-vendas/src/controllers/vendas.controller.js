@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
 const vendasModel = require('../models/vendas.model');
 
 const vendaJson = (venda) => ({
@@ -61,10 +61,10 @@ const cancelar = async (requisicao, resposta) => {
   try {
 
     const id = requisicao?.params?.id;
-    if (!id || typeof id === 'string' || !ObjectID.isValid(id))
+    if (!id || typeof id !== 'string' || !mongoose.Types.ObjectId.isValid(id))
       return resposta.status(400).json({ mensagem: 'Id inválido.' });
 
-    const venda = await vendasModel.findOne(ObjectId(id));
+    const venda = await vendasModel.findOne({ '_id': mongoose.Types.ObjectId(id) });
     if (!venda)
       return resposta.status(404).json({ mensagem: `Venda ${id} não encontrada.` });
 
