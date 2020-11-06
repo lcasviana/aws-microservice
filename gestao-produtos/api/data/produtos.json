@@ -1,0 +1,13 @@
+{
+  "produtos": {
+    "data": [
+      {
+        "id": "fe4b13dd-8a44-47a1-ac5b-16612e61154f",
+        "nome": "Chocolate",
+        "descricao": "Chocolate Meio Amargo",
+        "setor": "Doces",
+        "precoReais": "10,00"
+      }
+    ]
+  }
+}
