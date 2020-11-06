@@ -13,9 +13,9 @@ const vendaJson = (venda) => ({
 const gerar = async (requisicao, resposta) => {
   try {
 
-    const produtos = requisicao?.body?.produtos;
+    const produtos = requisicao.body?.produtos;
     if (!produtos || !Array.isArray(produtos) || !produtos.length || produtos.some(p =>
-      !p.produtoId || typeof p.produtoId !== 'string' || !p.produtoId?.trim() || !p.quantidade || typeof p.quantidade !== 'number'))
+      !p.produtoId || typeof p.produtoId !== 'string' || !p.produtoId.trim() || !p.quantidade || typeof p.quantidade !== 'number'))
       return resposta.status(400).json({ mensagem: 'Lista inválida de produtos.' });
 
     const produtosPromises = produtos.map(produto => {
@@ -30,7 +30,7 @@ const gerar = async (requisicao, resposta) => {
     const produtosResultado = await Promise.all(produtosPromises);
     const produtosNaoEncontrados = produtosResultado.filter(produto => produto instanceof Error);
     if (produtosNaoEncontrados.length)
-      return resposta.status(404).json({ mensagem: `Produtos ${produtosNaoEncontrados.join(' ,')} não encontrados` });
+      return resposta.status(404).json({ mensagem: `Produtos ${produtosNaoEncontrados.join(', ')} não encontrados` });
 
     const venda = await vendasModel.create({
       valorReais: produtosResultado.reduce((prev, curr) => prev + curr.valor, 0),
@@ -60,7 +60,7 @@ const listar = async (_, resposta) => {
 const cancelar = async (requisicao, resposta) => {
   try {
 
-    const id = requisicao?.params?.id;
+    const id = requisicao.params?.id;
     if (!id || typeof id !== 'string' || !mongoose.Types.ObjectId.isValid(id))
       return resposta.status(400).json({ mensagem: 'Id inválido.' });
 
