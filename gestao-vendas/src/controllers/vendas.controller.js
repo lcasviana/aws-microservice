@@ -25,7 +25,7 @@ const gerar = async (requisicao, resposta) => {
     const produtosSucesso = [], produtosErro = [];
     for (let i = 0; i < produtos.length; i++) {
       try {
-        const p = (await (await fetch(`http://localhost:8080/api/v1/produtos/${produtos[i].produtoId}`)).json());
+        const p = (await (await fetch(`http://localhost:3001/api/v1/produtos/${produtos[i].produtoId}`)).json());
         console.log(p);
         produtosSucesso.push({ valor: p.precoReais, ...produtos[i] })
       } catch (err) {

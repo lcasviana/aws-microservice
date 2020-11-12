@@ -20,5 +20,5 @@ app.use('/api/v1/vendas', vendasRoute);
 app.use((requisicao, resposta) =>
   resposta.status(404).send(`${requisicao.method} ${requisicao.url}`));
 
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 3002;
 app.listen(port, () => console.log(`vendas port ${port}`));
