@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const vendasModel = require('../models/vendas.model');
+const fetch = require('node-fetch');
 
 const vendaJson = (venda) => ({
   id: venda._id,
@@ -18,22 +19,23 @@ const gerar = async (requisicao, resposta) => {
       !p.produtoId || typeof p.produtoId !== 'string' || !p.produtoId.trim() || !p.quantidade || typeof p.quantidade !== 'number'))
       return resposta.status(400).json({ mensagem: 'Lista inválida de produtos.' });
 
-    const produtosPromises = produtos.map(produto => {
+    const produtosSucesso = [], produtosErro = [];
+    for (let i = 0; i < produtos.length; i++) {
       try {
-        const valor = Math.floor(Math.random() * Math.floor(9)) + 1;
-        return Promise.resolve({ valor, ...produto });
-      } catch {
-        return Promise.reject(produto.produtoId);
+        const p = (await (await fetch(`http://localhost:8080/api/v1/produtos/${produtos[i].produtoId}`)).json());
+        console.log(p);
+        produtosSucesso.push({ valor: p.precoReais, ...produtos[i] })
+      } catch (err) {
+        console.error(err);
+        produtosErro.push(produtos[i].id);
       }
-    });
+    }
 
-    const produtosResultado = await Promise.all(produtosPromises);
-    const produtosNaoEncontrados = produtosResultado.filter(produto => produto instanceof Error);
-    if (produtosNaoEncontrados.length)
-      return resposta.status(404).json({ mensagem: `Produtos ${produtosNaoEncontrados.join(', ')} não encontrados` });
+    if (produtosErro.length)
+      return resposta.status(404).json({ mensagem: `Produtos ${produtosErro.join(', ')} não encontrados` });
 
     const venda = await vendasModel.create({
-      valorReais: produtosResultado.reduce((prev, curr) => prev + curr.valor, 0),
+      valorReais: produtosSucesso.reduce((prev, curr) => prev + curr.valor, 0),
       produtos,
     });
 
