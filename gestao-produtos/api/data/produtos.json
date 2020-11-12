@@ -6,7 +6,7 @@
         "nome": "Chocolate",
         "descricao": "Chocolate Meio Amargo",
         "setor": "Doces",
-        "precoReais": "10,00"
+        "precoReais": 10.0
       }
     ]
   }
