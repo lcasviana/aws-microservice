@@ -14,7 +14,10 @@ const vendaJson = (venda) => ({
 const gerar = async (requisicao, resposta) => {
   try {
 
-    const produtos = requisicao.body?.produtos;
+    if (!requisicao.body)
+      return resposta.status(400).json({ mensagem: 'Lista inválida de produtos.' });
+
+    const produtos = requisicao.body.produtos;
     if (!produtos || !Array.isArray(produtos) || !produtos.length || produtos.some(p =>
       !p.produtoId || typeof p.produtoId !== 'string' || !p.produtoId.trim() || !p.quantidade || typeof p.quantidade !== 'number'))
       return resposta.status(400).json({ mensagem: 'Lista inválida de produtos.' });
@@ -62,7 +65,10 @@ const listar = async (_, resposta) => {
 const cancelar = async (requisicao, resposta) => {
   try {
 
-    const id = requisicao.params?.id;
+    if (!requisicao.params)
+      return resposta.status(400).json({ mensagem: 'Id inválido.' });
+
+    const id = requisicao.params.id;
     if (!id || typeof id !== 'string' || !mongoose.Types.ObjectId.isValid(id))
       return resposta.status(400).json({ mensagem: 'Id inválido.' });
 
