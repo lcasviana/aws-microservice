@@ -2,24 +2,56 @@ version: '3'
 
 services:
 
+  gestao-produto:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: gestao-produto
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    networks:
+      - app-network
+    command: node gestao-produto/server.js
+
   gestao-vendas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: gestao-vendas
+    restart: unless-stopped
+    env_file: gestao-vendas/.env
+    environment:
+      - MONGODB=$MONGODB
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    networks:
+      - app-network
+    command: node gestao-vendas/srcapp.js
+
+  api-gateway:
     build:
       context: .
       dockerfile: Dockerfile
     image: nodejs
     container_name: nodejs
     restart: unless-stopped
-    env_file: .env
-    environment:
-      - MONGODB=$MONGODB
     ports:
-      - "80:8080"
+      - "3000:3000"
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
     networks:
       - app-network
-    command: ./wait-for.sh db:27017 -- /home/node/app/node_modules/.bin/nodemon app.js
+    command: node api-gateway/index.js
 
 networks:
   app-network:
