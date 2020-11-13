@@ -4,7 +4,7 @@ services:
 
   gestao-produto:
     build:
-      context: .
+      context: gestao-produto
       dockerfile: Dockerfile
     image: nodejs
     container_name: gestao-produto
@@ -12,15 +12,13 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    networks:
-      - app-network
-    command: node gestao-produto/server.js
+      - .:/home/node
+      - /home/node/node_modules
+    command: npm start
 
   gestao-vendas:
     build:
-      context: .
+      context: gestao-vendas
       dockerfile: Dockerfile
     image: nodejs
     container_name: gestao-vendas
@@ -28,32 +26,20 @@ services:
     ports:
       - "3002:3002"
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    networks:
-      - app-network
-    command: node gestao-vendas/srcapp.js
+      - .:/home/node
+      - /home/node/node_modules
+    command: npm start
 
   api-gateway:
     build:
-      context: .
+      context: api-gateway
       dockerfile: Dockerfile
     image: nodejs
-    container_name: nodejs
+    container_name: api-gateway
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    networks:
-      - app-network
-    command: node api-gateway/index.js
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  dbdata:
-  node_modules:
+      - .:/home/node
+      - /home/node/node_modules
+    command: npm start
