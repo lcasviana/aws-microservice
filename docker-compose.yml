@@ -25,9 +25,6 @@ services:
     image: nodejs
     container_name: gestao-vendas
     restart: unless-stopped
-    env_file: gestao-vendas/.env
-    environment:
-      - MONGODB=$MONGODB
     ports:
       - "3002:3002"
     volumes:
